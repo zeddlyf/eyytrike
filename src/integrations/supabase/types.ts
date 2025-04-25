@@ -9,7 +9,157 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      drivers: {
+        Row: {
+          documents_verified: boolean | null
+          id: string
+          is_active: boolean | null
+          license_number: string
+          vehicle_plate: string
+          vehicle_type: string
+        }
+        Insert: {
+          documents_verified?: boolean | null
+          id: string
+          is_active?: boolean | null
+          license_number: string
+          vehicle_plate: string
+          vehicle_type: string
+        }
+        Update: {
+          documents_verified?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          license_number?: string
+          vehicle_plate?: string
+          vehicle_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drivers_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          payment_method: string | null
+          status: Database["public"]["Enums"]["payment_status"] | null
+          trip_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          payment_method?: string | null
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          trip_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          payment_method?: string | null
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          trip_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      trips: {
+        Row: {
+          commuter_id: string
+          created_at: string | null
+          driver_id: string | null
+          dropoff_location: string
+          id: string
+          pickup_location: string
+          status: Database["public"]["Enums"]["trip_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          commuter_id: string
+          created_at?: string | null
+          driver_id?: string | null
+          dropoff_location: string
+          id?: string
+          pickup_location: string
+          status?: Database["public"]["Enums"]["trip_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          commuter_id?: string
+          created_at?: string | null
+          driver_id?: string | null
+          dropoff_location?: string
+          id?: string
+          pickup_location?: string
+          status?: Database["public"]["Enums"]["trip_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trips_commuter_id_fkey"
+            columns: ["commuter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trips_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +168,14 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      payment_status: "pending" | "completed" | "failed" | "refunded"
+      trip_status:
+        | "pending"
+        | "accepted"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+      user_role: "admin" | "driver" | "commuter"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +290,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      payment_status: ["pending", "completed", "failed", "refunded"],
+      trip_status: [
+        "pending",
+        "accepted",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
+      user_role: ["admin", "driver", "commuter"],
+    },
   },
 } as const
